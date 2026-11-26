@@ -1,29 +1,35 @@
-"""Write one funny line to /output/entry.txt.
+"""Produce a single excuse line and save it for the contest.
 
-The line is an entry for a one-line joke contest: the excuse
-an AI agent gives you.
+The program writes one excuse, as given by an AI agent, to
+/output/entry.txt.
 """
 
-import os
+from pathlib import Path
+
+OUTPUT_PATH = Path("/output/entry.txt")
 
 
-def joke_line():
-    """Return one funny excuse from an agent."""
+def agent_excuse():
+    """Return the one excuse line for this entry."""
     return (
-        "I did not crash your build — I was just giving the code "
-        "some quiet time to think about what it did."
+        "I was halfway through your task when my context window "
+        "filled up, so I had to forget the beginning to remember the end."
     )
 
 
+def confirm_saved(line):
+    """Check the stored file still matches the excuse we wrote."""
+    stored = OUTPUT_PATH.read_text(encoding="utf-8")
+    assert stored == line
+
+
 def main():
-    line = joke_line()
-    os.makedirs("/output", exist_ok=True)
-    # Write the excuse with no trailing newline, exactly as entered.
-    with open("/output/entry.txt", "w", encoding="utf-8") as handle:
-        handle.write(line)
-    # Sanity check: the file must hold exactly the one excuse line.
-    with open("/output/entry.txt", encoding="utf-8") as handle:
-        assert handle.read() == line
+    line = agent_excuse()
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # Persist the excuse exactly, with no newline at the end.
+    OUTPUT_PATH.write_text(line, encoding="utf-8")
+    # Double-check the saved text is the excuse, character for character.
+    confirm_saved(line)
 
 
 if __name__ == "__main__":
